@@ -1,0 +1,560 @@
+{
+  "datasets": [
+    {
+      "name": "8a3fb74b",
+      "displayName": "Expectations",
+      "queryLines": [
+        "select * from dq_expectations_history"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "aa10a352",
+      "displayName": "quarantine data overview summary",
+      "queryLines": [
+        "select * from dq_quarantine_counts"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "39bd6686",
+      "displayName": "Referential Integrity Data Overview",
+      "queryLines": [
+        "select * from dq_referential_integrity"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "1844737d",
+      "displayName": "gold revenue",
+      "queryLines": [
+        "select * from gold_daily_revenue"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "7896159c",
+      "displayName": "gold funnel metrics overview dataset",
+      "queryLines": [
+        "select * from gold_funnel_analysis"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "151fdafb",
+      "displayName": "gold fulfillment",
+      "queryLines": [
+        "select * from gold_fulfillment_health"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "f422d7c0",
+      "displayName": "Comprehensive Gold Customer Insights Dataset",
+      "queryLines": [
+        "select * from gold_customer_360"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    }
+  ],
+  "pages": [
+    {
+      "name": "e8dd9a68",
+      "displayName": "Expectation DashBoard",
+      "layout": [
+        {
+          "widget": {
+            "name": "bde0617f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8a3fb74b",
+                  "fields": [
+                    {
+                      "name": "rule_name",
+                      "expression": "`rule_name`"
+                    },
+                    {
+                      "name": "daily(timestamp)",
+                      "expression": "DATE_TRUNC(\"DAY\", `timestamp`)"
+                    },
+                    {
+                      "name": "failure_rate_pct",
+                      "expression": "`failure_rate_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(timestamp)",
+                  "axis": {
+                    "title": "Date"
+                  },
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "failure_rate_pct",
+                  "axis": {
+                    "title": "failure rate"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "rule_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 8,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "a2fc1ec0",
+      "displayName": "Qurantine Dashboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "7a4a15e4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "aa10a352",
+                  "fields": [
+                    {
+                      "name": "source",
+                      "expression": "`source`"
+                    },
+                    {
+                      "name": "quarantined_count",
+                      "expression": "`quarantined_count`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "source",
+                  "axis": {
+                    "title": "Qurantine Source"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "quarantined_count",
+                  "axis": {
+                    "title": "Records"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "source",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 9,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "6fdf0244",
+      "displayName": "Orphaned Dahsboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "42490283",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "39bd6686",
+                  "fields": [
+                    {
+                      "name": "relationship",
+                      "expression": "`relationship`"
+                    },
+                    {
+                      "name": "orphaned_count",
+                      "expression": "`orphaned_count`"
+                    },
+                    {
+                      "name": "daily(checked_at)",
+                      "expression": "DATE_TRUNC(\"DAY\", `checked_at`)"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "relationship"
+                  },
+                  {
+                    "fieldName": "orphaned_count"
+                  },
+                  {
+                    "fieldName": "daily(checked_at)",
+                    "displayName": "Refresh Date"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "074ec3f0",
+      "displayName": "Gold Dashboards",
+      "layout": [
+        {
+          "widget": {
+            "name": "revenue-trends-with-category",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "1844737d",
+                  "fields": [
+                    {
+                      "name": "category_name",
+                      "expression": "`category_name`"
+                    },
+                    {
+                      "name": "daily(sales_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `sales_date`)"
+                    },
+                    {
+                      "name": "sum(net_revenue)",
+                      "expression": "SUM(`net_revenue`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 18px;\">Revenue Trends with category</span></span>",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(sales_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(net_revenue)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "category_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 11,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "funnel-analysis",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7896159c",
+                  "fields": [
+                    {
+                      "name": "referrer",
+                      "expression": "`referrer`"
+                    },
+                    {
+                      "name": "sum(conversion_rate)",
+                      "expression": "SUM(`conversion_rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block\"><span style=\"font-size: 18px;\">Funnel Analysis</span></span>",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "referrer",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(conversion_rate)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "referrer",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 7,
+            "width": 11,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "sla-compliance-trends-over-time",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "151fdafb",
+                  "fields": [
+                    {
+                      "name": "region",
+                      "expression": "`region`"
+                    },
+                    {
+                      "name": "daily(order_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `order_date`)"
+                    },
+                    {
+                      "name": "sla_compliance_rate",
+                      "expression": "`sla_compliance_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 18px;\">SLA Compliance Trends over Time</span></span>",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(order_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sla_compliance_rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "region",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 13,
+            "width": 11,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "lifetime-value-vs-order-count",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "f422d7c0",
+                  "fields": [
+                    {
+                      "name": "loyalty_tier",
+                      "expression": "`loyalty_tier`"
+                    },
+                    {
+                      "name": "order_count",
+                      "expression": "`order_count`"
+                    },
+                    {
+                      "name": "lifetime_value",
+                      "expression": "`lifetime_value`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 18px;\">Lifetime Value vs. Order Count</span></span>",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "order_count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "lifetime_value",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "loyalty_tier",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 19,
+            "width": 11,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

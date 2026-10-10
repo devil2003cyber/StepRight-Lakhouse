@@ -37,15 +37,15 @@ def test_daily_revenue_allocates_discount_proportionally_and_filters_scd2(local_
     orders_df = local_spark.createDataFrame(
         [
             # Current version of O1 — the one that should actually be used.
-            ("O1", "2026-07-10", "CA", 10.0, None),
+            ("O1", "delivered", "2026-07-10", "CA", 10.0, None),
             # A SUPERSEDED version of the same order, with a deliberately wrong
             # discount, to prove the SCD2 filter excludes it. If this leaked
             # through, the test's expected totals below would be wrong.
-            ("O1", "2026-07-10", "CA", 999.0, "2026-07-09T00:00:00"),
+            ("O1", "delivered", "2026-07-10", "CA", 999.0, "2026-07-09T00:00:00"),
             # O2 has no discount at all — proves coalesce(discount_amount, 0).
-            ("O2", "2026-07-10", "NY", None, None),
+            ("O2", "delivered", "2026-07-10", "NY", None, None),
         ],
-        schema="order_id string, order_date string, shipping_state string, discount_amount double, __END_AT string",
+        schema="order_id string, order_status string, order_date string, shipping_state string, discount_amount double, __END_AT string",
     )
 
     order_items_df = local_spark.createDataFrame(
@@ -65,7 +65,7 @@ def test_daily_revenue_allocates_discount_proportionally_and_filters_scd2(local_
             (date(2026, 7, 10), "Sports", "CA", 40.0, 4.0, 36.0),
             (date(2026, 7, 10), "Formal", "NY", 50.0, 0.0, 50.0),
         ],
-        schema="revenue_date date, category_name string, region string, "
+        schema="sales_date date, category_name string, region string, "
         "gross_revenue double, total_discount double, net_revenue double",
     )
 
@@ -83,8 +83,8 @@ def test_daily_revenue_guards_against_zero_order_subtotal(local_spark):
         [("P1", "CAT1")], schema="product_id string, category_id string"
     )
     orders_df = local_spark.createDataFrame(
-        [("O1", "2026-07-10", "CA", 5.0, None)],
-        schema="order_id string, order_date string, shipping_state string, discount_amount double, __END_AT string",
+        [("O1", "delivered", "2026-07-10", "CA", 5.0, None)],
+        schema="order_id string, order_status string, order_date string, shipping_state string, discount_amount double, __END_AT string",
     )
     order_items_df = local_spark.createDataFrame(
         [("I1", "O1", "P1", 0.0)],
@@ -95,7 +95,7 @@ def test_daily_revenue_guards_against_zero_order_subtotal(local_spark):
 
     expected = local_spark.createDataFrame(
         [(date(2026, 7, 10), "Formal", "CA", 0.0, 0.0, 0.0)],
-        schema="revenue_date date, category_name string, region string, "
+        schema="sales_date date, category_name string, region string, "
         "gross_revenue double, total_discount double, net_revenue double",
     )
 
