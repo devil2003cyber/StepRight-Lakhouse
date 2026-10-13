@@ -1,0 +1,19 @@
+resources:
+  pipelines:
+    stepright_ingestion_pipeline:
+      name: stepright-ingestion-pipeline
+      serverless: true
+      allow_duplicate_names: true
+      tags:
+        environment: ${bundle.target}
+      
+      root_path: ${workspace.file_path}/pipelines/ingestion_pipeline
+      catalog: ${var.stepright_catalog}
+      schema: stepright
+
+      configuration:
+        stepright.catalog: ${var.stepright_catalog}
+
+      libraries:
+        - glob:
+            include: ../../pipelines/ingestion_pipeline/transformations/**

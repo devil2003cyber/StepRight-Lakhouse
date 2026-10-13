@@ -1,0 +1,11 @@
+resources:
+  dashboards:
+    stepright_dq_dashboard:
+      display_name: "StepRight DQ Dashboard"
+      
+      file_path: ../../monitoring/stepright_dashboard.lvdash.json
+
+      warehouse_id: ${var.stepright_warehouse_id}
+
+      dataset_catalog: ${var.stepright_catalog}
+      dataset_schema: stepright

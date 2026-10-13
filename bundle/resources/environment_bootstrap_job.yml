@@ -1,0 +1,45 @@
+resources:
+  jobs:
+    stepright_environment_bootstrap:
+      name: stepright-environment-bootstrap
+ 
+      tags:
+        environment: ${bundle.target}
+ 
+      tasks:
+        - task_key: environment_setup
+          notebook_task:
+            notebook_path: ../../setup/01_environment_setup.py
+            base_parameters:
+              catalog: ${var.stepright_catalog}
+ 
+        - task_key: run_ingestion
+          depends_on:
+            - task_key: environment_setup
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.stepright_ingestion_pipeline.id}
+ 
+        - task_key: run_transformation
+          depends_on:
+            - task_key: run_ingestion
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.stepright_transformation_pipeline.id}
+ 
+        - task_key: event_log_setup
+          depends_on:
+            - task_key: run_transformation
+          notebook_task:
+            notebook_path: ../../setup/03_event_log_setup.py
+            base_parameters:
+              catalog: ${var.stepright_catalog}
+              ingestion_pipeline_id: ${resources.pipelines.stepright_ingestion_pipeline.id}
+              transformation_pipeline_id: ${resources.pipelines.stepright_transformation_pipeline.id}
+ 
+        - task_key: dq_dashboard_setup
+          depends_on:
+            - task_key: event_log_setup
+          notebook_task:
+            notebook_path: ../../monitoring/dq_dashboard_setup.ipynb
+            base_parameters:
+              catalog: ${var.stepright_catalog}
+              schema: stepright

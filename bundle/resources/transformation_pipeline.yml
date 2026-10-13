@@ -1,0 +1,20 @@
+resources:
+  pipelines:
+    stepright_transformation_pipeline:
+      name: stepright-transformation-pipeline
+      serverless: true
+      allow_duplicate_names: true
+      tags:
+        environment: ${bundle.target}
+
+      root_path: ${workspace.file_path}/pipelines/transformation_pipeline
+
+      catalog: ${var.stepright_catalog}
+      schema: stepright
+
+      configuration:
+        stepright.catalog: ${var.stepright_catalog}
+
+      libraries:
+        - glob:
+            include: ../../pipelines/transformation_pipeline/transformations/**

@@ -1,0 +1,60 @@
+bundle:
+  name: stepright-lakehouse
+
+include:
+  - resources/ingestion_pipeline.yml
+  - resources/transformation_pipeline.yml
+  - resources/orchestration_job.yml
+  - resources/dq_dashboard.yml
+  - resources/environment_bootstrap_job.yml
+
+
+sync:
+  paths:
+    - ../pipelines
+    - ../jobs
+    - ../setup
+
+
+
+variables:
+  stepright_catalog:
+    description: Unity Catalog catalog this target reads/writes — same
+      pipeline code, different catalog injected per environment.
+    default: dev
+
+  stepright_warehouse_id:
+    description: SQL warehouse ID the DQ dashboard queries run against.
+      No sensible default — set per target below.
+    default: 7f9c018df72815eb
+
+
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://dbc-877f9291-5de5.cloud.databricks.com/
+  
+  uat:
+    workspace:
+      host: https://dbc-877f9291-5de5.cloud.databricks.com/
+    variables:
+      stepright_catalog: uat
+
+  prod:
+    workspace:
+      host: https://dbc-877f9291-5de5.cloud.databricks.com/
+    variables:
+      stepright_catalog: prod
+      stepright_warehouse_id: 123
+
+
+
+
+
+
+
+
+
+
+
