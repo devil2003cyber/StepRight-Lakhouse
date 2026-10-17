@@ -1,0 +1,250 @@
+{
+  "datasets": [
+    {
+      "name": "daff916f",
+      "displayName": "Expectations",
+      "queryLines": [
+        "SELECT * FROM dq_expectations_history"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "88cc0389",
+      "displayName": "Quarantine",
+      "queryLines": [
+        "SELECT * FROM dq_quarantine_counts"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    },
+    {
+      "name": "a8f69b9b",
+      "displayName": "Orphans",
+      "queryLines": [
+        "SELECT * FROM dq_referential_integrity"
+      ],
+      "catalog": "dev",
+      "schema": "stepright"
+    }
+  ],
+  "pages": [
+    {
+      "name": "cc83a790",
+      "displayName": "Expectations",
+      "layout": [
+        {
+          "widget": {
+            "name": "0eb050da",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "daff916f",
+                  "fields": [
+                    {
+                      "name": "rule_name",
+                      "expression": "`rule_name`"
+                    },
+                    {
+                      "name": "daily(timestamp)",
+                      "expression": "DATE_TRUNC(\"DAY\", `timestamp`)"
+                    },
+                    {
+                      "name": "failure_rate_pct",
+                      "expression": "`failure_rate_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(timestamp)",
+                  "axis": {
+                    "title": "Date"
+                  },
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "failure_rate_pct",
+                  "axis": {
+                    "title": "Fairure Rate"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "rule_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 10,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "02f23610",
+      "displayName": "Quarantine",
+      "layout": [
+        {
+          "widget": {
+            "name": "3c1250d8",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "88cc0389",
+                  "fields": [
+                    {
+                      "name": "source",
+                      "expression": "`source`"
+                    },
+                    {
+                      "name": "quarantined_count",
+                      "expression": "`quarantined_count`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "source",
+                  "axis": {
+                    "title": "Quarantine Sourse"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "quarantined_count",
+                  "axis": {
+                    "title": "Records"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "source",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 11,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "6ccf37bb",
+      "displayName": "Orphans",
+      "layout": [
+        {
+          "widget": {
+            "name": "62e6bea6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a8f69b9b",
+                  "fields": [
+                    {
+                      "name": "relationship",
+                      "expression": "`relationship`"
+                    },
+                    {
+                      "name": "orphaned_count",
+                      "expression": "`orphaned_count`"
+                    },
+                    {
+                      "name": "daily(checked_at)",
+                      "expression": "DATE_TRUNC(\"DAY\", `checked_at`)"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "relationship",
+                    "displayName": "Relationship"
+                  },
+                  {
+                    "fieldName": "orphaned_count",
+                    "displayName": "Orphans"
+                  },
+                  {
+                    "fieldName": "daily(checked_at)",
+                    "displayName": "Refresh Date"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 7,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
