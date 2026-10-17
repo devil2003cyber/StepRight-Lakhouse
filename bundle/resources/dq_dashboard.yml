@@ -3,7 +3,7 @@ resources:
     stepright_dq_dashboard:
       display_name: "StepRight DQ Dashboard"
       
-      file_path: ../../monitoring/stepright_dashboard.lvdash.json
+      file_path: ../../monitoring/dq_dashboard.lvdash.json
 
       warehouse_id: ${var.stepright_warehouse_id}
 

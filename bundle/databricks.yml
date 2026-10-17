@@ -14,7 +14,7 @@ sync:
     - ../pipelines
     - ../jobs
     - ../setup
-    - ../monitoring/dq_dashboard_setup.py
+    - ../monitoring/dq_dashboard_setup.ipynb
 
 
 
