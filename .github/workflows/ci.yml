@@ -1,0 +1,135 @@
+name: CI
+ 
+# Push to main, and workflow_dispatch for manual/demo runs — this is a
+# course project, not a team repo with PRs, so push-to-main is the
+# natural trigger. Manual dispatch kept too, useful for recording.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+ 
+jobs:
+  # ---------------------------------------------------------------------
+  # Fast, no Databricks involved at all — fail-fast gate before anything
+  # touches real infrastructure. Runs both pipelines' test suites
+  # separately (not one combined pytest invocation) — each has its own
+  # conftest.py inserting its own transformations/ folder onto sys.path,
+  # and running them together in one session risks that global sys.path
+  # mutation leaking between the two, which running as separate steps
+  # avoids entirely.
+  # ---------------------------------------------------------------------
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
+      - name: Install test dependencies
+        run: pip install pytest "pyspark>=3.5"
+ 
+      - name: Run ingestion_pipeline unit tests
+        run: pytest pipelines/ingestion_pipeline/tests -v
+ 
+      - name: Run transformation_pipeline unit tests
+        run: pytest pipelines/transformation_pipeline/tests -v
+ 
+  # ---------------------------------------------------------------------
+  # Validates and deploys the bundle to uat. Only runs once unit-test
+  # passes.
+  # ---------------------------------------------------------------------
+  validate-and-deploy-uat:
+    needs: unit-test
+    runs-on: ubuntu-latest
+    env:
+      # Repo-level secrets, disambiguated by name rather than GitHub
+      # Environments — the whole Environments feature (including
+      # environment-scoped secrets) isn't available on GitHub Free for
+      # private repos, confirmed, not just the reviewer/wait-timer gating
+      # we already worked around. dev and uat share one workspace, so
+      # these same UAT-suffixed secrets cover both.
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_UAT }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_UAT }}
+      DATABRICKS_WAREHOUSE_ID_UAT: ${{ secrets.DATABRICKS_WAREHOUSE_ID_UAT }}
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
+      - uses: databricks/setup-cli@main
+ 
+      - name: Install SDK for catalog-ensure step
+        run: pip install databricks-sdk==0.67.0
+ 
+      # Real chicken-and-egg, worth explaining: bundle deploy fails
+      # outright on the PIPELINE resources if the target catalog doesn't
+      # exist yet (confirmed via a real 404 CATALOG_DOES_NOT_EXIST on
+      # uat's first-ever deploy). stepright_environment_bootstrap's
+      # environment_setup task can't be the thing that creates the
+      # catalog first, because that job resource is defined in the SAME
+      # bundle deploy that would already have failed on the pipelines —
+      # the dependency runs the wrong direction. So catalog creation has
+      # to be a separate, standalone step, before bundle deploy, using
+      # the Unity Catalog API directly (no SQL warehouse needed at all —
+      # this is metadata, not a query). Broad except, deliberately: not
+      # guessing the SDK's exact "already exists" exception class name,
+      # since CREATE CATALOG IF NOT EXISTS semantics need to be idempotent
+      # here regardless of which specific error type a duplicate produces.
+      - name: Ensure target catalog exists
+        run: |
+          python3 -c "
+          import os
+          from databricks.sdk import WorkspaceClient
+          w = WorkspaceClient()
+          resp = w.statement_execution.execute_statement(
+              warehouse_id=os.environ['DATABRICKS_WAREHOUSE_ID_UAT'],
+              statement='CREATE CATALOG IF NOT EXISTS uat',
+              wait_timeout='30s',
+          )
+          if resp.status.state.value != 'SUCCEEDED':
+              raise SystemExit(f'CREATE CATALOG failed: {resp.status.error}')
+          print('Catalog uat ensured (created if missing, no-op if already present)')
+          "
+ 
+      - name: Validate bundle
+        working-directory: bundle
+        run: databricks bundle validate --target uat
+ 
+      - name: Deploy bundle
+        working-directory: bundle
+        run: databricks bundle deploy --target uat
+ 
+      - name: Run environment bootstrap
+        working-directory: bundle
+        run: databricks bundle run stepright_environment_bootstrap --target uat
+ 
+  # ---------------------------------------------------------------------
+  # Real integration suite, against the just-deployed uat. Only
+  # runs once validate-and-deploy-uat succeeds.
+  # ---------------------------------------------------------------------
+  integration-test:
+    needs: validate-and-deploy-uat
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_UAT }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_UAT }}
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
+      - uses: databricks/setup-cli@main
+ 
+      - name: Install test dependencies
+        run: pip install pytest faker databricks-sdk==0.67.0
+ 
+      - name: Run integration tests
+        working-directory: tests/integration
+        run: pytest test_integration.py -v -s
+ 
