@@ -65,7 +65,10 @@ jobs:
       - name: Run environment bootstrap
         working-directory: bundle
         run: databricks bundle run stepright_environment_bootstrap --target prod
- 
+
+      - name: Verify production SQL warehouse
+        run: databricks warehouses get "$DATABRICKS_WAREHOUSE_ID_PROD"
+
       # Non-destructive — reads only, never touches landing, never
       # triggers full_refresh. Structural checks (resources reachable,
       # tables queryable, no failed pipeline updates) are hard failures;

@@ -14,8 +14,7 @@ sync:
     - ../pipelines
     - ../jobs
     - ../setup
-    - ../monitoring/dq_dashboard_setup.ipynb
-
+    - ../monitoring/dq_dashboard_setup.py
 
 
 variables:
@@ -23,12 +22,10 @@ variables:
     description: Unity Catalog catalog this target reads/writes — same
       pipeline code, different catalog injected per environment.
     default: dev
-
+  
   stepright_warehouse_id:
     description: SQL warehouse ID the DQ dashboard queries run against.
-      No sensible default — set per target below.
-    default: 7f9c018df72815eb
-
+      Set through the target-specific environment variable below.
 
 targets:
   dev:
@@ -41,13 +38,4 @@ targets:
   prod:
     variables:
       stepright_catalog: prod
-
-
-
-
-
-
-
-
-
 
