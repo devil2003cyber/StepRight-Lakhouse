@@ -20,6 +20,7 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
+      DATABRICKS_WAREHOUSE_ID_PROD: ${{ secrets.DATABRICKS_WAREHOUSE_ID_PROD }}
     steps:
       # First step, deliberately — fail fast, before checkout or any
       # Databricks connection is even attempted. Exact-match, not a
@@ -52,11 +53,11 @@ jobs:
       # safely repeatable and automated below.
       - name: Validate bundle
         working-directory: bundle
-        run: databricks bundle validate --target prod
+        run: databricks bundle validate --target prod --var="stepright_warehouse_id=${DATABRICKS_WAREHOUSE_ID_PROD}"
  
       - name: Deploy bundle
         working-directory: bundle
-        run: databricks bundle deploy --target prod
+        run: databricks bundle deploy --target prod --var="stepright_warehouse_id=${DATABRICKS_WAREHOUSE_ID_PROD}"
  
       # Idempotent, same as uat's — safe to run on every promotion, not
       # just the first one. Creates schema/volume/subfolders on a

@@ -33,18 +33,14 @@ variables:
 targets:
   dev:
     default: true
-    variables:
-      stepright_warehouse_id: ${env.DATABRICKS_WAREHOUSE_ID_DEV}
 
   uat:
     variables:
       stepright_catalog: uat
-      stepright_warehouse_id: ${env.DATABRICKS_WAREHOUSE_ID_UAT}
 
   prod:
     variables:
       stepright_catalog: prod
-      stepright_warehouse_id: ${env.DATABRICKS_WAREHOUSE_ID_PROD}
 
 
 
