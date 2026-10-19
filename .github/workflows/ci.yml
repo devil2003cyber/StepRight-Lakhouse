@@ -4,8 +4,8 @@ name: CI
 # course project, not a team repo with PRs, so push-to-main is the
 # natural trigger. Manual dispatch kept too, useful for recording.
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
  
 jobs:

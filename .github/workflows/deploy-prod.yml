@@ -1,0 +1,76 @@
+name: Deploy Prod
+ 
+# Deliberately independent of ci.yml — no push trigger, no dependency on
+# unit-test/validate-and-deploy-uat/integration-test succeeding first.
+# Deploys whatever is currently on main, whenever a human explicitly
+# triggers it. This is the L23 manual-gate design: GitHub's native
+# Environments required-reviewers feature isn't available on Free for a
+# private repo, so a deliberate, separate workflow_dispatch stands in for
+# it — triggering this action IS the approval.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "DEPLOY PROD" (exact, case-sensitive) to proceed'
+        required: true
+ 
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
+    steps:
+      # First step, deliberately — fail fast, before checkout or any
+      # Databricks connection is even attempted. Exact-match, not a
+      # loose "starts with" or case-insensitive check — the friction is
+      # the point, so a fat-fingered near-match should not silently pass.
+      - name: Verify confirmation phrase
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "DEPLOY PROD" ]; then
+            echo "Confirmation phrase did not match exactly. Aborting — nothing was deployed."
+            exit 1
+          fi
+          echo "Confirmed. Proceeding with prod deployment."
+ 
+      - uses: actions/checkout@v4
+ 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
+      - uses: databricks/setup-cli@main
+ 
+      - name: Install smoke test dependencies
+        run: pip install pytest databricks-sdk==0.67.0
+ 
+      # No "Ensure target catalog exists" step here, unlike uat's job —
+      # deliberate. The prod catalog is created manually, once, outside
+      # CI (`CREATE CATALOG IF NOT EXISTS prod`, run by hand in the prod
+      # workspace) — bare-minimum manual setup, nothing beyond what
+      # bundle deploy itself requires to exist first. Everything else is
+      # safely repeatable and automated below.
+      - name: Validate bundle
+        working-directory: bundle
+        run: databricks bundle validate --target prod
+ 
+      - name: Deploy bundle
+        working-directory: bundle
+        run: databricks bundle deploy --target prod
+ 
+      # Idempotent, same as uat's — safe to run on every promotion, not
+      # just the first one. Creates schema/volume/subfolders on a
+      # genuinely first run; a harmless no-op re-run otherwise.
+      - name: Run environment bootstrap
+        working-directory: bundle
+        run: databricks bundle run stepright_environment_bootstrap --target prod
+ 
+      # Non-destructive — reads only, never touches landing, never
+      # triggers full_refresh. Structural checks (resources reachable,
+      # tables queryable, no failed pipeline updates) are hard failures;
+      # row counts are logged, not asserted, since a freshly-promoted
+      # prod can legitimately have zero rows until real data arrives.
+      - name: Run smoke tests
+        working-directory: tests/smoke
+        run: pytest test_smoke.py -v -s
+ 

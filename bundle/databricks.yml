@@ -38,16 +38,17 @@ targets:
   
   uat:
     workspace:
-      host: https://dbc-877f9291-5de5.cloud.databricks.com/
+      host: ${env.DATABRICKS_HOST}
     variables:
       stepright_catalog: uat
+      stepright_warehouse_id: ${env.DATABRICKS_WAREHOUSE_ID_UAT}
 
   prod:
     workspace:
-      host: https://dbc-877f9291-5de5.cloud.databricks.com/
+      host: ${env.DATABRICKS_HOST}
     variables:
       stepright_catalog: prod
-      stepright_warehouse_id: 123
+      stepright_warehouse_id: ${env.DATABRICKS_WAREHOUSE_ID_PROD}
 
 
 

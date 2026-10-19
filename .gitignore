@@ -1,0 +1,4 @@
+.databrickscfg
+.env
+.env.*
+!.env.example
