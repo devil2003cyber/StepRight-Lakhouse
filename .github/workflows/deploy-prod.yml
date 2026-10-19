@@ -75,6 +75,7 @@ jobs:
       # row counts are logged, not asserted, since a freshly-promoted
       # prod can legitimately have zero rows until real data arrives.
       - name: Run smoke tests
+        env: BUNDLE_VAR_stepright_warehouse_id: ${{ secrets.DATABRICKS_WAREHOUSE_ID_PROD }}
         working-directory: tests/smoke
         run: pytest test_smoke.py -v -s
  
