@@ -4,8 +4,8 @@ name: CI
 # course project, not a team repo with PRs, so push-to-main is the
 # natural trigger. Manual dispatch kept too, useful for recording.
 on:
-  # push:
-  #   branches: [main]
+  #push:
+    #branches: [main]
   workflow_dispatch:
  
 jobs:
@@ -97,15 +97,15 @@ jobs:
  
       - name: Validate bundle
         working-directory: bundle
-        run: databricks bundle validate --target uat
+        run: databricks bundle validate --target uat --var="stepright_warehouse_id=${DATABRICKS_WAREHOUSE_ID_UAT}"
  
       - name: Deploy bundle
         working-directory: bundle
-        run: databricks bundle deploy --target uat
+        run: databricks bundle deploy --target uat --var="stepright_warehouse_id=${DATABRICKS_WAREHOUSE_ID_UAT}"
  
       - name: Run environment bootstrap
         working-directory: bundle
-        run: databricks bundle run stepright_environment_bootstrap --target uat
+        run: databricks bundle run stepright_environment_bootstrap --target uat --var="stepright_warehouse_id=${DATABRICKS_WAREHOUSE_ID_UAT}"
  
   # ---------------------------------------------------------------------
   # Real integration suite, against the just-deployed uat. Only

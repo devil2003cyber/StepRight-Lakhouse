@@ -64,7 +64,7 @@ jobs:
       # genuinely first run; a harmless no-op re-run otherwise.
       - name: Run environment bootstrap
         working-directory: bundle
-        run: databricks bundle run stepright_environment_bootstrap --target prod
+        run: databricks bundle run stepright_environment_bootstrap --target prod --var="stepright_warehouse_id=${DATABRICKS_WAREHOUSE_ID_PROD}"
 
       - name: Verify production SQL warehouse
         run: databricks warehouses get "$DATABRICKS_WAREHOUSE_ID_PROD"
