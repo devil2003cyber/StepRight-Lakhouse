@@ -302,32 +302,31 @@ review. Recommended screenshots:
 
 ### 1. Overall Databricks pipeline graph
 
-<!-- Add image: docs/images/overall-pipeline-graph.png -->
-
+![description](https://github.com/devil2003cyber/StepRight-Lakhouse/blob/main/docs/images/overall-pipeline-graph.png)
 
 ### 2. Ingestion pipeline
 
 <!-- Add image: docs/images/ingestion-pipeline.png -->
 
-_Add the Bronze ingestion pipeline graph here._
+![description](https://github.com/devil2003cyber/StepRight-Lakhouse/blob/main/docs/images/ingestion-pipeline.png)
 
 ### 3. Transformation pipeline
 
 <!-- Add image: docs/images/transformation-pipeline.png -->
 
-_Add the Silver-to-Gold transformation pipeline graph here._
+![description](https://github.com/devil2003cyber/StepRight-Lakhouse/blob/main/docs/images/transformation-pipeline.png)
 
 ### 4. Data quality dashboard
 
 <!-- Add image: docs/images/data-quality-dashboard.png -->
 
-_Add the DQ dashboard screenshot here._
+![description](https://github.com/devil2003cyber/StepRight-Lakhouse/blob/main/docs/images/data-quality-dashboard.png)
 
 ### 5. GitHub Actions deployment
 
 <!-- Add image: docs/images/github-actions-deployment.png -->
 
-_Add a screenshot showing UAT validation or production deployment here._
+![description](https://github.com/devil2003cyber/StepRight-Lakhouse/blob/main/docs/images/github-actions-deployment.png)
 
 ## Resume summary
 
